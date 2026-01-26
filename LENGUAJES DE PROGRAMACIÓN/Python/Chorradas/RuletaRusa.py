@@ -1,5 +1,6 @@
 import os
 import random
+import webbrowser
 def main(): 
     while 1: 
         opcion = str(input("Pulsa enter para girar el tambor o pon q para salir\n"))
@@ -8,7 +9,8 @@ def main():
         eleccion = random.randint(1, 6)
         bala = random.randint(1, 6)
         if bala == eleccion: 
-            os.system("shutdown /s /t 0")
+            for i in range (1,20): 
+                webbrowser.open("https://www.youtube.com/shorts/Ay8lynMZ4mE")
         else: 
             print("Te salvaste")
 
