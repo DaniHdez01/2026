@@ -1,9 +1,11 @@
 import os
 import random
-def main():
-    eleccion = 0 
-    while eleccion != 9: 
-        eleccion = int(input("Di un numero del 1 al 6 o 9 para salir"))
+def main(): 
+    while 1: 
+        opcion = str(input("Pulsa enter para girar el tambor o pon q para salir\n"))
+        if opcion == "q": 
+            break
+        eleccion = random.randint(1, 6)
         bala = random.randint(1, 6)
         if bala == eleccion: 
             os.system("shutdown /s /t 0")
