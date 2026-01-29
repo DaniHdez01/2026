@@ -1,5 +1,5 @@
 import random
-
+#Si me acuerdo, establecer excepciones en vez de utilizar un if que es una cutrada historica
 def pedirCarta(): 
     return random.randint(1,11)
 
