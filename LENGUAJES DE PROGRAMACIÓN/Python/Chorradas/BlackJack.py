@@ -8,13 +8,14 @@ def ronda(jugado):
     sumadoCrupier = pedirCarta()
     while sumadoJugador <= 21  and sumadoCrupier <=21: 
         print("Tu puntuacion es: "+str(sumadoJugador))
-        decision = int(input("1: pedir una carta\n 2: plantarse"))
+        print("Puntuacion del crupier "+str(sumadoCrupier))
+        decision = int(input("1: pedir una carta\n 2: plantarse "))
         if decision == 2: 
             break 
         else: 
             sumadoCrupier += pedirCarta()
             sumadoJugador +=pedirCarta()
-    
+
     if sumadoJugador <= 21: 
         if sumadoJugador == sumadoCrupier: 
             print("Empate, recuperas el importe apostado")
@@ -27,6 +28,7 @@ def ronda(jugado):
             return 0
     else: 
         print("Has perdido, te pasaste de 21")
+        return 0
 def juego(saldo):
     while saldo > 0: 
         apuesta = int(input("Empieza la ronda, establece una apuesta o -1 para salir: "))
@@ -37,7 +39,7 @@ def juego(saldo):
         saldo -= apuesta
         apuesta = ronda(apuesta)
         saldo += apuesta
-
+        print("Tu nuevo saldo " + str(saldo))
 def main(): 
     saldoInicial = int(input("Cuanto dinero deseas jugar"))
     juego(saldoInicial)
