@@ -1,5 +1,13 @@
 import random
 #Si me acuerdo, establecer excepciones en vez de utilizar un if que es una cutrada historica
+
+class FondosInsuficientes(Exception): 
+    "Fondos insuficientes, realice una apuesta menor"
+
+def comprobarFondos(saldo, apuesta): 
+    if saldo < apuesta: 
+        raise FondosInsuficientes
+    
 def pedirCarta(): 
     return random.randint(1,11)
 
@@ -11,7 +19,8 @@ def ronda(jugado):
         print("Puntuacion del crupier "+str(sumadoCrupier))
         decision = int(input("1: pedir una carta\n 2: plantarse "))
         if decision == 2: 
-            break 
+            sumadoCrupier += pedirCarta()
+            break
         else: 
             sumadoCrupier += pedirCarta()
             sumadoJugador +=pedirCarta()
@@ -34,8 +43,11 @@ def juego(saldo):
         apuesta = int(input("Empieza la ronda, establece una apuesta o -1 para salir: "))
         if saldo == -1: 
             break
-        if apuesta > saldo: 
-            print("Fondos insuficientes")
+        try: 
+            comprobarFondos(saldo, apuesta)
+        except FondosInsuficientes as e:
+            print(f"ERROR: {e}") 
+        
         saldo -= apuesta
         apuesta = ronda(apuesta)
         saldo += apuesta
