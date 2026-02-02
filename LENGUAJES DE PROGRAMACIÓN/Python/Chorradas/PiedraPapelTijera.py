@@ -1,5 +1,13 @@
 import random 
 
+jugadas = ['piedra', 'papel', 'tijera']
+class JugadaNoValida(Exception): 
+    "Jugada no válida, elije entre piedra, papel o tijeras"
+
+def comprobarJugada(jugada): 
+    if jugada not in jugadas: 
+        raise JugadaNoValida
+
 def ganador(): 
     print("GANASTE!")
     return 1
@@ -7,14 +15,16 @@ def perdedor():
     print("PERDISTE GAY JAJAJAJA")
     return 0
 
+
 def piedraPapelTijeras(): 
-    jugadas = ['piedra', 'papel', 'tijera']
     while 1: 
         jugador = str(input("Elije piedra papel o tijera\n"))
         i = random.randint(0,2)
         jugadaIA = jugadas[i]
-        if jugador not in jugadas: 
-            print("Error" + jugador + "no es una jugada valida")
+        try: 
+            comprobarJugada(jugador)
+        except JugadaNoValida as e: 
+            print(f"ERROR: {e}")
         if jugadaIA == 'piedra': 
             if jugador == 'papel':
                return ganador()

@@ -38,6 +38,7 @@ def ronda(jugado):
     else: 
         print("Has perdido, te pasaste de 21")
         return 0
+    
 def juego(saldo):
     while saldo > 0: 
         apuesta = int(input("Empieza la ronda, establece una apuesta o -1 para salir: "))
@@ -52,6 +53,7 @@ def juego(saldo):
         apuesta = ronda(apuesta)
         saldo += apuesta
         print("Tu nuevo saldo " + str(saldo))
+        
 def main(): 
     saldoInicial = int(input("Cuanto dinero deseas jugar"))
     juego(saldoInicial)
