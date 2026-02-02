@@ -1,4 +1,7 @@
 
+
+import javax.swing.JOptionPane;
+
 public class Fibbonaci{
 
     public static int fibbonaci(int n) {
@@ -10,11 +13,20 @@ public class Fibbonaci{
     }
 
     public static void main(String[] args) {
-        int cantidad = 10; // Cambia este valor para más términos
-        System.out.print("Sucesión de Fibonacci: ");
+        System.out.print("Introduce la cantidad de términos de Fibonacci que deseas calcular: ");
+        int cantidad = Integer.parseInt(JOptionPane.showInputDialog(null, "Cuantos números de la sucesion deseas calcular?", "Entrada de datos", JOptionPane.QUESTION_MESSAGE));
+        int [] salida = new int[cantidad]; 
         for (int i = 0; i < cantidad; i++) {
-            System.out.print(fibbonaci(i) + " ");
+            salida[i] = fibbonaci(i);
         }
-        System.out.println();
+
+        // Construir la cadena de salida para el JOptionPane
+        StringBuilder sb = new StringBuilder("Sucesión de Fibonacci: ");
+        for (int num : salida) {
+            sb.append(num).append(" ");
+        }
+        
+        // Mostrar la secuencia en un cuadro de mensaje
+        JOptionPane.showMessageDialog(null, sb.toString().trim(), "Salida de Fibonacci", JOptionPane.INFORMATION_MESSAGE);
     }
 }
