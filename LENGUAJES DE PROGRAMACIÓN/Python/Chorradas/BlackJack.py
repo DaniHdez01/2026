@@ -1,13 +1,17 @@
 import random
-#Si me acuerdo, establecer excepciones en vez de utilizar un if que es una cutrada historica
 
 class FondosInsuficientes(Exception): 
     "Fondos insuficientes, realice una apuesta menor"
+    pass
+class SinFondos(Exception): 
+    "No hay fondos, has perdido"
 
-def comprobarFondos(saldo, apuesta): 
+def comprobarApuesta(saldo, apuesta): 
     if saldo < apuesta: 
-        raise FondosInsuficientes
-    
+        raise FondosInsuficientes("Fondos insuficientes, realice una apuesta menor")
+def comprobarFondos(saldo): 
+    if saldo == 0: 
+        raise SinFondos("No hay fondos disponibles, has perdido")
 def pedirCarta(): 
     return random.randint(1,11)
 
@@ -45,17 +49,22 @@ def juego(saldo):
         if apuesta == -1: 
             break
         try: 
-            comprobarFondos(saldo, apuesta)
+            comprobarApuesta(saldo, apuesta)
+            saldo -= apuesta
+            apuesta = ronda(apuesta)
+            saldo += apuesta
+            print("Tu nuevo saldo " + str(saldo))
         except FondosInsuficientes as e:
-            print(f"ERROR: {e}") 
-        
-        saldo -= apuesta
-        apuesta = ronda(apuesta)
-        saldo += apuesta
-        print("Tu nuevo saldo " + str(saldo))
+            print(f"ERROR: {e}")
+        try: 
+            comprobarFondos(saldo)
+            print("Nueva ronda: \n")
+        except SinFondos as e:
+            print(f"SE ACABÓ: {e}")
+            break       
         
 def main(): 
-    saldoInicial = int(input("Cuanto dinero deseas jugar"))
+    saldoInicial = int(input("Cuanto dinero deseas jugar: "))
     juego(saldoInicial)
 
 if __name__ == "__main__": 
