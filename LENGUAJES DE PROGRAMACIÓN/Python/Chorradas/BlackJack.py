@@ -42,7 +42,7 @@ def ronda(jugado):
 def juego(saldo):
     while saldo > 0: 
         apuesta = int(input("Empieza la ronda, establece una apuesta o -1 para salir: "))
-        if saldo == -1: 
+        if apuesta == -1: 
             break
         try: 
             comprobarFondos(saldo, apuesta)
