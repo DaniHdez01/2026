@@ -12,7 +12,7 @@ def ganador():
     print("GANASTE!")
     return 1
 def perdedor(): 
-    print("PERDISTE GAY JAJAJAJA")
+    print("PERDISTE JAJAJAJA")
     return 0
 
 
@@ -57,7 +57,7 @@ def juego(pMax):
             pJugador +=1
         else: 
             pIA += 1
-        print("Marcador" + str(pJugador) + "-" + str(pIA))
+        print(f"Marcador: {pJugador} - {pIA}")
     if pJugador == pMax: 
         print("felicidades, has ganado")
     else: 
