@@ -25,6 +25,7 @@ def piedraPapelTijeras():
             comprobarJugada(jugador)
         except JugadaNoValida as e: 
             print(f"ERROR: {e}")
+        print(F"Jugada IA: {jugadaIA}")
         if jugadaIA == 'piedra': 
             if jugador == 'papel':
                return ganador()
@@ -39,11 +40,11 @@ def piedraPapelTijeras():
                return perdedor()
             else: 
                 print("EMPATE\n")
-        else: 
+        else: #IA = TIJERA
             if jugador == 'piedra': 
-               return perdedor()
-            elif jugador == 'tijera': 
-                return ganador()
+               return ganador()
+            elif jugador == 'papel': 
+                return perdedor()
             else: 
                 print("EMPATE\n")
             
