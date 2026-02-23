@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ValorMaximo",
+            "request": "launch",
+            "mainClass": "ValorMaximo",
+            "projectName": "2026_998372fa"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-DemoApplication<demo>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
