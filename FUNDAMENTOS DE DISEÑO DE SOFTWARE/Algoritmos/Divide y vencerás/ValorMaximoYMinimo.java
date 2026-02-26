@@ -32,6 +32,7 @@ public class ValorMaximo {
 
 }
 class Resultado{
+    //Clase para el minimo y máximo
     int maximo; 
     int minimo;
     public Resultado(int maximo, int minimo) {
