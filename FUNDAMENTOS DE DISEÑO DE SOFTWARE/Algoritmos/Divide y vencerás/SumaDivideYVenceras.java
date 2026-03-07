@@ -2,13 +2,13 @@
 public class SumaDivideYVenceras{
     public static int suma (int v[], int i, int fin){
 
-        if (i >= fin){
+        if (i >= fin){ //Caso trivial 
             return 0;
         }
         if (i + 1 == fin){
             return v[i];
         } else {
-            int mitad = (i + fin) / 2;
+            int mitad = (i + fin) / 2; //Indice medio 
             int sumaIzq = suma(v, i, mitad);
             int sumaDer = suma(v, mitad, fin);
             return sumaIzq + sumaDer;
