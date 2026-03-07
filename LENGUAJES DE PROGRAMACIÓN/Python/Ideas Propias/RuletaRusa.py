@@ -1,10 +1,16 @@
 import os
 import random
 import webbrowser
+
+def salirDelJuego(): 
+    print("Saliendo del juego")
+
+    
 def main(): 
     while 1: 
         opcion = str(input("Pulsa enter para girar el tambor o pon q para salir\n"))
         if opcion == "q": 
+            salirDelJuego()
             break
         eleccion = random.randint(1, 6)
         bala = random.randint(1, 6)
