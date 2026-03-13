@@ -14,11 +14,12 @@ def filter_text(input_string, condition_function):
     """
     words = input_string.split()
     filtered_words = [word for word in words if condition_function(word) == False]
+    words = input_string.split() # Divide la cadena en palabras
+    filtered_words = [word for word in words if not condition_function(word)] # Simplifica la condición
     return filtered_words
 
 def apply(condicion, texto): 
     longs = []
-    i = 0
     for palabra in texto: 
         long = condicion(palabra)
         longs.append(long)

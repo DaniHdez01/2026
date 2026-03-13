@@ -1,7 +1,7 @@
 {
     "python-envs.pythonProjects": [
         {
-            "path": "LENGUAJES DE PROGRAMACIÓN/Python/Practica1",
+            "path": "LENGUAJES DE PROGRAMACIÓN/Python/Practica 1",
             "envManager": "ms-python.python:venv",
             "packageManager": "ms-python.python:pip"
         }
