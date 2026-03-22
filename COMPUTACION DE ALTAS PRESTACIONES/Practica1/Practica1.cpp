@@ -67,7 +67,6 @@ int main()
         currentCentroid = devolverCentroide(grupoDeCentroide, nPointsPerCluster);
         printf(" (refinado para clúster %d)\n", i); // Añadir contexto al print del centroide calculado
         finalCentroids.push_back(currentCentroid); // Almacenar el centroide refinado
-
         // Limpiar el grupo y regenerar los puntos usando el centroide refinado
         grupoDeCentroide.clear(); 
         for (int j = 0; j < nPointsPerCluster; j++){
@@ -89,15 +88,15 @@ int main()
     fwrite(&nFilas, sizeof(int), 1, resultsFile);
     fwrite(&nCol, sizeof(int), 1, resultsFile);
     // Ahora 'data' está poblado correctamente
-    fwrite(data.data(), sizeof(float), data.size()*nCol, resultsFile);
+    fwrite(data.data(), sizeof(point2D), data.size(), resultsFile);
     fclose(resultsFile);
     for (int i = 0; i < data.size(); i++)
         std::cout << data[i].x << "\t" << data[i].y << "\n";
 
     std::cout << "\n--- Centroides finales calculados ---\n";
-    for (int i = 0; i < finalCentroids.size(); ++i) {
-        std::cout << "Centroide " << i << ": " << finalCentroids[i].x << "\t" << finalCentroids[i].y << "\n";
-    }
+   // for (int i = 0; i < finalCentroids.size(); ++i) {
+        //std::cout << "Centroide " << i << ": " << finalCentroids[i].x << "\t" << finalCentroids[i].y << "\n";
+    ///}
 
     return 0; // Indicar ejecución exitosa
 }
