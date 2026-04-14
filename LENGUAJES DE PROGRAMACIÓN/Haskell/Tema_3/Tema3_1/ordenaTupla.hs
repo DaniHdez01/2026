@@ -1,4 +1,5 @@
 module OrdenarTupla where 
+--Implementar una función en Haskell que dada una tupla compuesta por tres números enteros la devuelva ordenada de menor a mayor.
 
     ordenarTupla :: (Int, Int, Int) -> (Int, Int, Int)
     ordenarTupla (a, b, c) 
