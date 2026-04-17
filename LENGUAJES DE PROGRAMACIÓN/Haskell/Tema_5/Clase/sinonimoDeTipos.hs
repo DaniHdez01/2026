@@ -7,9 +7,10 @@ module Alumnos where
     type Alumno = (Nombre, DNI, Nota)
 
     --Función para probar los tipos de datos 
+    --IMPORTANTE, si queremos acceder a un elemento del tipo debemos descomponer el tipo OBLIGATORIO 
     aprobado :: Alumno -> Bool 
     aprobado (_,_,nota) = nota >= 5.0 
-    
+
     --Otra función que haga listas de tipos de alumnos
     listaAprobados :: [Alumno] -> [Alumno]
     lsitaAprobados ls = [alumno | alumno <- ls, aprobado alumno]
