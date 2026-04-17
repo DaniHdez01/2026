@@ -7,3 +7,6 @@ module Matriz where
 
     tamanyo :: Matriz -> String 
     tamanyo matriz = "Matriz de: " ++ show (rows matriz) ++ " filas y " ++ show (cols matriz) ++ " columnas"
+    --HACERLO EN CASA HACIENDO UNA LISTA DE LISTAS
+
+    
