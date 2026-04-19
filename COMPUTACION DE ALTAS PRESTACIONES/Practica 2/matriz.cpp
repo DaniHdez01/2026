@@ -7,8 +7,11 @@
 #include <cstring> // Para memcpy
 
 int main(){
-    int rows = 3; 
-    int cols = 3; 
+    int N = 0; 
+    printf("Indique cuantas filas y columnas debe tener la matriz a simular: "); 
+    std::cin >> N; 
+    int rows = N; 
+    int cols = N; 
     int celds = rows * cols; 
     double *arr_old = (double*) malloc(celds * sizeof(double));
     double *arr_new = (double*) malloc(celds * sizeof(double));
@@ -19,16 +22,24 @@ int main(){
         return 1; // Indicar un error
     }
 
-    srand(time(NULL)); 
 
     //AHORA INICIALIZAMOS EL ARRAY ANTIGUO
     printf("Número total de celdas: %d\n", celds); 
     for(int i = 0; i< celds; i++){
-        arr_old[i] =  (double)(rand() % 30 + 1); // Castear a double
+        if (i >= 0 && i < cols) { // En este caso nos encontramso en la parte superrior de la matriz 
+            arr_old[i] = 100.00; 
+        } else {
+            arr_old[i] = 0; //Si no es la parte de arriba, es, o un borde inferior o una celda ue no es borde y por lo tanto de momento la ponemos a 0
+        }
         printf("Temperatura inicial de la celda %d: %.2f \n", i, arr_old[i]);
-    }
+        }
 
+    int its = 0; 
+    printf("Indique el número de iteraciones para simular: "); 
+    std::cin >> its; 
     memcpy(arr_new, arr_old, celds * sizeof(double));
+
+    for (int i = 0; i < its; i++){
     for(int i = 1; i < rows -1; ++i){
         for(int j = 1; j < cols - 1; ++j){
             int idx = i * cols + j;
@@ -40,9 +51,10 @@ int main(){
         }
 
     }
-    double *temp = arr_old; 
-    arr_old = arr_new;
-    arr_new = temp;
+        double *temp = arr_old; 
+        arr_old = arr_new;
+        arr_new = temp;
+    }
     for(int i = 0; i<celds; i++){
         printf("celda %d, Temperatura: %.2f \n", i, arr_old[i]); 
     }
