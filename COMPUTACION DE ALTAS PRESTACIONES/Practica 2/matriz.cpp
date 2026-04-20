@@ -40,20 +40,20 @@ int main(){
     memcpy(arr_new, arr_old, celds * sizeof(double));
 
     for (int i = 0; i < its; i++){
-    for(int i = 1; i < rows -1; ++i){
-        for(int j = 1; j < cols - 1; ++j){
-            int idx = i * cols + j;
-            int up = (i-1) * cols + j; 
-            int dwn  = (i + 1) * cols + j;
-            int lft    = i * cols + (j - 1);
-            int rgt    = i * cols + (j + 1);
-            arr_new[idx] = (arr_old[up] + arr_old[dwn] + arr_old[lft] + arr_old[rgt]) / 4.0;
-        }
+        for(int i = 1; i < rows -1; ++i){
+            for(int j = 1; j < cols - 1; ++j){
+                int idx = i * cols + j;
+                int up = (i-1) * cols + j; 
+                int dwn  = (i + 1) * cols + j;
+                int lft    = i * cols + (j - 1);
+                int rgt    = i * cols + (j + 1);
+                arr_new[idx] = (arr_old[up] + arr_old[dwn] + arr_old[lft] + arr_old[rgt]) / 4.0;
+            }
 
-    }
-        double *temp = arr_old; 
-        arr_old = arr_new;
-        arr_new = temp;
+        }
+            double *temp = arr_old; 
+            arr_old = arr_new;
+            arr_new = temp;
     }
     for(int i = 0; i<celds; i++){
         printf("celda %d, Temperatura: %.2f \n", i, arr_old[i]); 

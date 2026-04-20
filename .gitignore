@@ -3,3 +3,5 @@ salida
 *.txt
 .vscode
 .vs
+*.perefetto
+*.pdf

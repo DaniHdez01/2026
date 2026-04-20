@@ -1,0 +1,5 @@
+# Carpeta de compilación de CMake
+build/
+
+# Trazas de Perfetto
+*.perfetto
