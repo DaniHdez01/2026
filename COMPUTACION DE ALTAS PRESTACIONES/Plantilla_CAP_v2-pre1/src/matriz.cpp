@@ -3,18 +3,31 @@
 #include <cstring> // Para memcpy
 #include <ctime>
 #include <iostream>
+#include <mpi.h>
 #include <omp.h>
 #include <vector> // Necesario para std::vector
 
-int main() {
-    int N = 0;
-    printf("Indique cuantas filas y columnas debe tener la matriz a simular: ");
-    std::cin >> N;
+// Ahora para poder utilizar MPI tenemos que pasar varios parámetros a la función, entre ellos el número de procesos que
+// queremos tener
+int main(int argc, char* argv[]) {
+
+    // Inicializar el entorno de MPI:
+    int rank, size;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    int N = 16;
+    int its = 1000;
+
+    // 1. Descomposición del dominio: Cuanas celdas hará cara proceso?
+    int local_rows = N / size;
     int rows = N;
     int cols = N;
     int celds = rows * cols;
-    double* arr_old = (double*)malloc(celds * sizeof(double));
-    double* arr_new = (double*)malloc(celds * sizeof(double));
+    int local_celds = (local_rows + 2) * N;
+    double* arr_old = (double*)malloc(local_celds * sizeof(double));
+    double* arr_new = (double*)malloc(local_celds * sizeof(double));
 
     // Comprobar si la asignación de memoria fue exitosa
     if (arr_old == NULL || arr_new == NULL) {
@@ -22,24 +35,14 @@ int main() {
         return 1; // Indicar un error
     }
 
-    // AHORA INICIALIZAMOS EL ARRAY ANTIGUO
-    printf("Número total de celdas: %d\n", celds);
-
     // BUCLE DE INICIALIZACIIÓN (Podría paralelizarse pero no conviene hacerlo para esta práctica sería complicarse)
-    for (int i = 0; i < celds; i++) {
-        if (i >= 0 && i < cols) { // En este caso nos encontramso en la parte superrior de la matriz
-            arr_old[i] = 100.00;
-        } else {
-            arr_old[i] = 0; // Si no es la parte de arriba, es, o un borde inferior o una celda ue no es borde y por lo
-                            // tanto de momento la ponemos a 0
+    if (rank == 0) {
+        for (int j = 0; j < N; j++) {
+            printf("Número total de celdas: %d\n", celds);
+            arr_old[0 * N + j] = 100.0;
+            arr_new[0 * N + j] = 100.0;
         }
-        printf("Temperatura inicial de la celda %d: %.2f \n", i, arr_old[i]);
     }
-
-    int its = 0;
-    printf("Indique el número de iteraciones para simular: ");
-    std::cin >> its;
-    memcpy(arr_new, arr_old, celds * sizeof(double));
     // BUCLES CRÍTICOS PARA PARALELIZAR
     /**
      * COSAS A TENER EN CUENTA:
@@ -49,32 +52,75 @@ int main() {
      *      2. La variable N que indica el tamaño de estos
      * 3. Qué variables deben ser privadas
      */
-    unsigned t0, t1;
-    t0 = clock();
-#pragma omp paralell // Iniciar el entorno donde vamos a paralelizar
+
+#pragma omp parallel // Iniciar el entorno donde vamos a paralelizar
     {
+        MPI_Request requests[4];
         for (int i = 0; i < its; i++) { // BUCLE DE LAS IITERACIONES: IMPARALELIZABLE
+#pragma omp single
+            // CRUCIAL: Llevar las cuentas de cuantas peticiones se han producido: En caso de no hacerlo, el pruimer y
+            // último proceso se quedARÁN BLOQUEADOS
+            int req_count = 0;
+            // PASO 1: Cada proceso va a recibir datos de sus vecinos de arriba para los bordes locales:
+            if (rank > 0) {
+                MPI_Isend(&arr_old[1 * N], N, MPI_DOUBLE, rank - 1, 0, MPI_COMM_WORLD, &requests[req_count++]);
+                // Recibo el halo superior (índice 0) desde el vecino de arriba
+                MPI_Irecv(&arr_old[0 * N], N, MPI_DOUBLE, rank - 1, 1, MPI_COMM_WORLD, &requests[req_count++]);
+            }
+            // PASO 2: Comunicación con el vecino de abajo
+            if (rank < size - 1) {
+                // Mando al halo inferior mis últimas filas
+                MPI_Isend(&arr_old[local_rows * N], N, MPI_DOUBLE, rank + 1, 1, MPI_COMM_WORLD, &requests[req_count++]);
+                // Recibo el halo inferior (índice filas_locales + 1) desde el vecino de abajo
+                MPI_Irecv(&arr_old[(local_rows + 1) * N], N, MPI_DOUBLE, rank + 1, 0, MPI_COMM_WORLD,
+                          &requests[req_count++]);
+            }
 
-            // Indicamos que se cree un equipo de hilos y se reparta el bucle for
-            // Usamos schedule(static) porque todas las celdas tardan lo mismo en calcularse El enunciado pide que
-            // comparemos el estático con el dinámico
+            // AHORA CON MPI Separamos el cálculo de las celdas interiores con el de las celdas frontera
+            //  Indicamos que se cree un equipo de hilos y se reparta el bucle for
+            //  Usamos schedule(static) porque todas las celdas tardan lo mismo en calcularse El enunciado pide que
+            //  comparemos el estático con el dinámico
 // #pragma omp parallel for schedule(static) shared(arr_old, arr_new, N)
-#pragma omp parallel for schedule(dynamic)
-            for (int i = 1; i < rows - 1; ++i) {     // BUCLE DE FILAS
-                for (int j = 1; j < cols - 1; ++j) { // BUCLE DE COLUMNAS
+#pragma omp parallel for schedule(static)
+            // Pusiste #pragma omp parallel for schedule(dynamic) dentro de una región que ya era paralela. Al hacer
+            // esto, le estás pidiendo al sistema que los hilos que ya existen... ¡creen otro equipo de sub-hilos
+            // enteros!
+            for (int i = 1; i < local_rows - 1; ++i) { // BUCLE DE FILAS
+                for (int j = 1; j < N - 1; ++j) {      // BUCLE DE COLUMNAS
                     // Por qué no podemos paralelizar este for? -> Se produce Fasle Sharing ya que los datos en memoria
-                    // son contíguos a diferencia del bucle anterior
-
+                    // son contíguos a diferencia del bucle anterio
                     // CÓMPUTO
-                    int idx = i * cols + j;
-                    int up = (i - 1) * cols + j;
-                    int dwn = (i + 1) * cols + j;
-                    int lft = i * cols + (j - 1);
-                    int rgt = i * cols + (j + 1);
+                    int idx = i * N + j;
+                    int up = (i - 1) * N + j;
+                    int dwn = (i + 1) * N + j;
+                    int lft = i * N + (j - 1);
+                    int rgt = i * N + (j + 1);
                     arr_new[idx] = (arr_old[up] + arr_old[dwn] + arr_old[lft] + arr_old[rgt]) / 4.0;
                 }
             }
 #pragma omp single
+            // UNA VEZ HECHO EL CÁLCULO: Hacer que todos los procesos esperen a que terminen todos
+            MPI_Waitall(req_count, requests, MPI_STATUSES_IGNORE);
+
+            //--CÁLCULO DE CELDAS FRONTERA:
+            if (rank > 0 || (rank == 0 && 1)) {
+                int i = 1;
+                for (int j = 1; j < N - 1; j++) {
+                    arr_new[i * N + j] = (arr_old[(i - 1) * N + j] + arr_old[(i + 1) * N + j] +
+                                          arr_old[i * N + (j - 1)] + arr_old[i * N + (j + 1)]) /
+                                         4.0;
+                }
+            }
+
+            // Calcular la fila límite inferior (i = filas_locales)
+            if (rank < size - 1 || (rank == size - 1 && /* lógica para no pisar el borde físico */ 1)) {
+                int i = local_rows;
+                for (int j = 1; j < N - 1; j++) {
+                    arr_new[i * N + j] = (arr_old[(i - 1) * N + j] + arr_old[(i + 1) * N + j] +
+                                          arr_old[i * N + (j - 1)] + arr_old[i * N + (j + 1)]) /
+                                         4.0;
+                }
+            }
             {
                 double* temp = arr_old;
                 arr_old = arr_new;
@@ -82,13 +128,14 @@ int main() {
             }
         }
     }
-    t1 = clock();
-    double time = (double(t1 - t0) / CLOCKS_PER_SEC);
-    for (int i = 0; i < celds; i++) {
-        printf("celda %d, Temperatura: %.2f \n", i, arr_old[i]);
+    if (rank == 0) {
+        for (int i = 0; i < celds; i++) {
+            printf("celda %d, Temperatura: %.2f \n", i, arr_old[i]);
+        }
     }
     std::cout << "Tiempo de ejecución: " << time << " segundos" << std::endl;
     free(arr_old);
     free(arr_new);
+    MPI_Finalize();
     return 0; // main debe devolver 0 para una ejecución exitosa
 }
