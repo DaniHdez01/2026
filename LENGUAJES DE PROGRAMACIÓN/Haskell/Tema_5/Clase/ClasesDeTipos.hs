@@ -24,4 +24,12 @@ module ClasesDeTipos where
     buscarPareja x [] = Nothing 
     buscarPareja x ((x,y):xs) = foldl(\r (a,b) -> if a == r then (Just b) else r) (Just x) xs --LAS FUNCIONES ANÓNIMAS SOLO PUEDEN TENER 2 ARGUMENTOS
 
-    
+
+    --Dada una lista y un número que devuelva la posicion de ese elemento en esa lista: 
+    posicion :: Eq (a) => a-> [(a,a)] -> Maybe a
+    posicion n [] = Nothing 
+    posicion n lst = posicionAux lst n 0
+
+    posicionAux :: Eq (a) => [a] -> a -> Int -> Maybe Int 
+    posicionAux [] _ _ = Nothing
+    posicionAux (x:xs) n pos = if (x==n) then Just pos else posicionAux xs n pos +1
