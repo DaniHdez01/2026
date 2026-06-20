@@ -9,4 +9,10 @@ def convert(lista_original):
 
 def convert_map(lista_original): 
     resultado = []
-    map(len, lista_original)
+    resultado = map(len, lista_original)
+    return resultado
+
+def lambda_map(lista_original): 
+    resultado = []
+    resultado = map(lambda x : len(x), lista_original)
+    return resultado
