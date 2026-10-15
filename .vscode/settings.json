@@ -5,5 +5,6 @@
             "envManager": "ms-python.python:venv",
             "packageManager": "ms-python.python:pip"
         }
-    ]
+    ],
+    "cmake.sourceDirectory": "C:/Users/herna/OneDrive/Escritorio/UNI/Repo/2026/COMPUTACION DE ALTAS PRESTACIONES/Plantilla_CAP_v2-pre1"
 }

@@ -38,6 +38,32 @@ point2D devolverCentroide(std::vector<point2D> data, int nPuntos){
     //Para cada punto devolver el centroide más cercano y asignarlo al que le toque 
 }
 
+int generarFichero(int nPointsPerCluster, int nClusters, std::vector<point2D> data){
+    // CREACIÓN DE FICHERO DE SALIDA
+    FILE* resultsFile = fopen("salida", "wb");
+    if (resultsFile == NULL) {
+        perror("Error al abrir el archivo salida");
+        return 1; // Indicar un error
+    } else {
+        int nFilas = nClusters * nPointsPerCluster;
+        int nCol = 2;
+        fwrite(&nFilas, sizeof(int), 1, resultsFile);
+        fwrite(&nCol, sizeof(int), 1, resultsFile);
+        // Ahora 'data' está poblado correctamente
+        fwrite(data.data(), sizeof(point2D), data.size(), resultsFile);
+        fclose(resultsFile);
+        for (int i = 0; i < data.size(); i++)
+            std::cout << data[i].x << "\t" << data[i].y << "\n";
+
+        std::cout << "\n--- Centroides finales calculados ---\n";
+    // for (int i = 0; i < finalCentroids.size(); ++i) {
+            //std::cout << "Centroide " << i << ": " << finalCentroids[i].x << "\t" << finalCentroids[i].y << "\n";
+        ///}
+        return 0;
+    }
+    
+}
+
 int main()
 {
     srand(time(NULL)); // Inicializa la semilla para los números aleatorios
@@ -77,26 +103,7 @@ int main()
         data.insert(data.end(), grupoDeCentroide.begin(), grupoDeCentroide.end());
     }
 
-    // CREACIÓN DE FICHERO DE SALIDA
-    FILE* resultsFile = fopen("salida", "wb");
-    if (resultsFile == NULL) {
-        perror("Error al abrir el archivo salida");
-        return 1; // Indicar un error
-    }
-    int nFilas = nClusters * nPointsPerCluster;
-    int nCol = 2;
-    fwrite(&nFilas, sizeof(int), 1, resultsFile);
-    fwrite(&nCol, sizeof(int), 1, resultsFile);
-    // Ahora 'data' está poblado correctamente
-    fwrite(data.data(), sizeof(point2D), data.size(), resultsFile);
-    fclose(resultsFile);
-    for (int i = 0; i < data.size(); i++)
-        std::cout << data[i].x << "\t" << data[i].y << "\n";
+    generarFichero(nPointsPerCluster, nClusters, data); 
 
-    std::cout << "\n--- Centroides finales calculados ---\n";
-   // for (int i = 0; i < finalCentroids.size(); ++i) {
-        //std::cout << "Centroide " << i << ": " << finalCentroids[i].x << "\t" << finalCentroids[i].y << "\n";
-    ///}
-
-    return 0; // Indicar ejecución exitosa
+    return 0; 
 }
