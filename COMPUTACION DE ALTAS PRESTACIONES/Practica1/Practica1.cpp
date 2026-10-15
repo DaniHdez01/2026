@@ -8,7 +8,6 @@
 #define PI 3.141582f
 
 struct point2D {
-
     float x;
     float y;
 };
@@ -23,7 +22,7 @@ point2D getRandomPoint(float x0, float y0,float maxRadius, float minRadius = 0.0
     return p;
 };
 
-point2D devolverCentroide(std::vector<point2D> data, int nPuntos){
+point2D calcularCentroide(std::vector<point2D> data, int nPuntos){
     float xMedio = 0.0;
     float yMedio = 0.0; 
     for (int i = 0; i< nPuntos; i++){
@@ -67,35 +66,35 @@ int generarFichero(int nPointsPerCluster, int nClusters, std::vector<point2D> da
 int main()
 {
     srand(time(NULL)); // Inicializa la semilla para los números aleatorios
-
+    //En el enunciado indica 1000 filas y 4 clusters
     int nClusters = 4;
     int nPointsPerCluster = 50;
 
     std::vector<point2D> data;
     std::vector<point2D> finalCentroids; // Vector para almacenar los centroides finales de cada clúster
 
-    // CREACIÓN DE PUNTOS
-    for (int i = 0; i < nClusters; i++)
+    //Iteración por cada cluster
+    for (int i = 0; i < nClusters; i++) //METER MPI PARA ASIGNAR UN GRUPO A CADA HILO
     {
+        //Crear los centroides y los puntos
         point2D currentCentroid = getRandomPoint(0.0f, 0.0f, 20.0, 0.0); // Centroide inicial aleatorio
         printf("Centroide inicial aleatorio para clúster %d: %f, %f \n", i, currentCentroid.x, currentCentroid.y);
         
         // Generar un primer conjunto de puntos alrededor del centroide inicial
         std::vector<point2D> grupoDeCentroide;
-        for (int j = 0; j < nPointsPerCluster; j++){
+        for (int j = 0; j < nPointsPerCluster; j++){ //Se podría paralelizar con openmp pero no es muy importante
             point2D newPoint = getRandomPoint(currentCentroid.x, currentCentroid.y, 1.0f);
             grupoDeCentroide.push_back(newPoint);
-            // Opcional: imprimir estos puntos iniciales si se desea
             // std::cout << newPoint.x << "\t" << newPoint.y << "\n";
         }
         
         // Calcular el "centroide nuevo" a partir de los puntos generados
-        currentCentroid = devolverCentroide(grupoDeCentroide, nPointsPerCluster);
+        currentCentroid = calcularCentroide(grupoDeCentroide, nPointsPerCluster);
         printf(" (refinado para clúster %d)\n", i); // Añadir contexto al print del centroide calculado
-        finalCentroids.push_back(currentCentroid); // Almacenar el centroide refinado
+        finalCentroids.push_back(currentCentroid); // Almacenar el centroide recalculado
         // Limpiar el grupo y regenerar los puntos usando el centroide refinado
         grupoDeCentroide.clear(); 
-        for (int j = 0; j < nPointsPerCluster; j++){
+        for (int j = 0; j < nPointsPerCluster; j++){  //PARALELIZAR CON OPENMP
             point2D newPoint = getRandomPoint(currentCentroid.x, currentCentroid.y, 1.0f); // Usar el centroide refinado
             grupoDeCentroide.push_back(newPoint);
             std::cout << newPoint.x << "\t" << newPoint.y << "\n"; // Imprimir los puntos finales
